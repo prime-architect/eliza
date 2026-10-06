@@ -1017,3 +1017,6 @@ packages/ui/src/components/shell/__e2e__/output-home-locale/
 
 # Temporary atomic core build directories.
 /packages/core/.core-build-*/
+
+# Assistant Edition: our docs live in-tree (upstream ignores docs/*)
+!docs/assistant-edition/
