@@ -69,6 +69,7 @@
     "test:scripts": "node packages/scripts/run-script-tests.ts --report test-results/script-tests/inventory.json --junit test-results/script-tests/junit.xml && bun run test:scripts:node",
     "test:e2e:record": "node packages/scripts/e2e-recordings/run-all.ts",
     "test:e2e:record:review": "node packages/scripts/e2e-recordings/run-all.ts --review --open-review",
+    "test:e2e:heavy": "cd packages/app && TEST_LANE=post-merge node ../scripts/run-heavy-e2e.ts --config vitest.app-real-e2e.config.ts ./test/app/memory-relationships.real.e2e.test.ts ./test/app/qa-checklist.real.e2e.test.ts",
     "test:matrix:review": "node packages/scripts/evidence-review/run-matrix.ts --open",
     "test:matrix": "node packages/scripts/evidence-review/run-matrix.ts --no-open",
     "evidence:doctor": "node packages/scripts/evidence-doctor.ts",
