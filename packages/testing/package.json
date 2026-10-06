@@ -15,6 +15,7 @@
     "./synthetic-world/sqlite": "./synthetic-world/src/sqlite.ts",
     "./mocks": "./scripts/mocks/index.ts",
     "./runtime": "./src/runtime.ts",
+    "./provider-contract": "./src/provider-contract/index.ts",
     "./models": "./src/models.ts",
     "./progressive-content": "./src/progressive-content.ts",
     "./cli": "./scenario-runner/src/cli.ts",
@@ -125,7 +126,6 @@
     "@elizaos/plugin-relationships": "workspace:*",
     "@elizaos/capacitor-system": "workspace:*",
     "@elizaos/cloud-shared": "workspace:*",
-    "@elizaos/cloud-test-mocks": "workspace:*",
     "@elizaos/plugin-browser": "workspace:*",
     "@elizaos/plugin-openai": "workspace:*",
     "@elizaos/plugin-anthropic": "workspace:*",
@@ -190,9 +190,6 @@
       "optional": true
     },
     "@elizaos/cloud-shared": {
-      "optional": true
-    },
-    "@elizaos/cloud-test-mocks": {
       "optional": true
     },
     "@elizaos/plugin-browser": {

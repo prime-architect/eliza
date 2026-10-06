@@ -11,7 +11,7 @@ import {
   redactProviderDiagnostics,
   runProviderAdapterConformance,
   startFakeProvider,
-} from "@elizaos/cloud-test-mocks/provider-contract";
+} from "@elizaos/testing/provider-contract";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { MapsError } from "../src/errors.js";
 import {
