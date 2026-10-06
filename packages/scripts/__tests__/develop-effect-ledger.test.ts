@@ -712,10 +712,8 @@ describe("checked-in workflow authority", () => {
               body?.inputs?.source_sha ?? body?.inputs?.deployment_sha;
             if (!source) throw new Error("Missing downstream source");
             let accepted = true;
-            if (workflow === "cloud-cf-deploy.yml") {
-              accepted =
-                ready.get("deploy-apps-worker.yml") === source &&
-                ready.get("deploy-eliza-provisioning-worker.yml") === source;
+            if (workflow === "deploy-apps-worker.yml") {
+              accepted = ready.get("build-agent-image.yml") === source;
               releaseAccepted = accepted;
             }
             const id = nextId++;
@@ -755,12 +753,12 @@ describe("checked-in workflow authority", () => {
     await expect(rollout(checkedIn)).resolves.toBe(true);
     const earlyRelease = [...checkedIn.effects].sort(
       (left, right) =>
-        Number(right.id === "cloud-staging") -
-        Number(left.id === "cloud-staging"),
+        Number(right.id === "apps-worker-staging") -
+        Number(left.id === "apps-worker-staging"),
     );
     await expect(
       rollout({ ...checkedIn, effects: earlyRelease }),
-    ).rejects.toThrow("cloud-staging: downstream run concluded failure");
+    ).rejects.toThrow("apps-worker-staging: downstream run concluded failure");
   });
 
   test("the handoff requires a successful aggregate and exact run-id response", () => {

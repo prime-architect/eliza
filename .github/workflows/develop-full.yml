@@ -84,13 +84,6 @@ jobs:
     if: needs.plan.outputs.run_canonical == 'true'
     uses: ./.github/workflows/ci.yml
     secrets: inherit
-  cloud:
-    needs: plan
-    if: needs.plan.outputs.run_cloud == 'true'
-    uses: ./.github/workflows/cloud-tests.yml
-    with:
-      source_checks_in_canonical_ci: true
-    secrets: inherit
   platform-smoke:
     needs: plan
     if: needs.plan.outputs.run_platform_smoke == 'true'
@@ -109,13 +102,12 @@ jobs:
     needs:
       - plan
       - canonical
-      - cloud
       - platform-smoke
       - ui-core
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      SURFACE_RESULTS: '{"canonical":"${{ needs.canonical.result }}","cloud":"${{ needs.cloud.result }}","platform-smoke":"${{ needs.platform-smoke.result }}","ui-core":"${{ needs.ui-core.result }}"}'
+      SURFACE_RESULTS: '{"canonical":"${{ needs.canonical.result }}","platform-smoke":"${{ needs.platform-smoke.result }}","ui-core":"${{ needs.ui-core.result }}"}'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

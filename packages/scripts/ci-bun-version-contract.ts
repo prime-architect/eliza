@@ -144,18 +144,8 @@ const EXCLUDED_SURFACES = [
 
 // Required, scheduled, and deploy-critical install lanes that must wire the
 // concrete pin directly (not merely resolve through indirection). The required
-// canonical CI aggregate, the develop PR gate, and the canonical Cloud
-// release are the load-bearing paths. `cloud-cf-deploy.yml` is now an
-// admission/dispatch wrapper with no Bun runtime; `cloud-cf-release.yml` owns
-// every install and build that publishes to staging or production. The general
-// workflow scan already rejects floating pins; gate membership additionally
-// prevents the release file from disappearing or replacing its direct
-// canonical literal with indirection (#19183).
-const GATE_WORKFLOWS = [
-  "ci.yml",
-  "pr-static-smoke.yml",
-  "cloud-cf-release.yml",
-];
+// canonical CI aggregate and the develop PR gate are the load-bearing paths.
+const GATE_WORKFLOWS = ["ci.yml", "pr-static-smoke.yml"];
 
 // Both the post-merge suite and PR Static Smoke must execute the contract and
 // publish an exact-head inventory. Keeping the PR authority here prevents a

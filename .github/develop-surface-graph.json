@@ -56,13 +56,6 @@
       ]
     },
     {
-      "id": "cloud",
-      "workflow": ".github/workflows/cloud-tests.yml",
-      "workspacePatterns": ["packages/cloud/**", "plugins/plugin-elizacloud"],
-      "inputs": ["packages/scripts/cloud/**"],
-      "dependsOn": ["canonical"]
-    },
-    {
       "id": "platform-smoke",
       "workflow": ".github/workflows/platform-smoke.yml",
       "workspacePatterns": ["packages/core"],
