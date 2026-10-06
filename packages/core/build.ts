@@ -72,8 +72,20 @@ async function emitCore(): Promise<void> {
 		const dist = path.join(root, "dist");
 		await mkdir(dist, { recursive: true });
 		for (const file of files) {
-			await mkdir(path.dirname(path.join(dist, file)), { recursive: true });
-			await rename(path.join(output, file), path.join(dist, file));
+			const dest = path.join(dist, file);
+			const src = path.join(output, file);
+			await mkdir(path.dirname(dest), { recursive: true });
+			try {
+				await rename(src, dest);
+			} catch (err: unknown) {
+				const code = (err as { code?: string })?.code;
+				if (code === "EPERM" || code === "EEXIST") {
+					await rm(dest, { force: true });
+					await rename(src, dest);
+				} else {
+					throw err;
+				}
+			}
 		}
 		const emitted = new Set(files);
 		for (const file of await filesUnder(dist)) {

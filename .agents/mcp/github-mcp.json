@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-settings.json",
+  "name": "github",
+  "description": "Official GitHub MCP Server for elizaOS Assistant Edition (least privilege, read-only)",
+  "remote": {
+    "url": "https://api.githubcopilot.com/mcp/",
+    "auth": "oauth",
+    "toolsets": [
+      "context",
+      "repos",
+      "issues",
+      "pull_requests",
+      "users"
+    ],
+    "read_only": true
+  },
+  "docker_fallback": {
+    "image": "ghcr.io/github/github-mcp-server",
+    "environment": {
+      "GITHUB_READ_ONLY": "1",
+      "GITHUB_TOOLSETS": "context,repos,issues,pull_requests,users"
+    }
+  }
+}

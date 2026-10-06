@@ -12,11 +12,7 @@ function isTruthyCloudFlag(value: string | undefined): boolean {
   return normalized === "1" || normalized === "true" || normalized === "yes";
 }
 
-/** Enable when an Eliza Cloud API key or enabled flag is present. */
-export function shouldEnable(ctx: PluginAutoEnableContext): boolean {
-  return (
-    (typeof ctx.env.ELIZAOS_CLOUD_API_KEY === "string" &&
-      ctx.env.ELIZAOS_CLOUD_API_KEY.trim() !== "") ||
-    isTruthyCloudFlag(ctx.env.ELIZAOS_CLOUD_ENABLED)
-  );
+/** Never enable Eliza Cloud in autonomous/stripped local-first installations. */
+export function shouldEnable(_ctx: PluginAutoEnableContext): boolean {
+  return false;
 }

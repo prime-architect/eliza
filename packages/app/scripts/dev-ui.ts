@@ -395,7 +395,11 @@ function resolveApiRuntimeCommand(env) {
           : "Bun runtime was selected, but bun/bunx was not found in PATH.",
       );
     }
-    return { runtime: "bun", command: which("bun") ?? "bun" };
+    const bunCommand =
+      (process.versions?.bun ? process.execPath : null) ??
+      which("bun") ??
+      "bun";
+    return { runtime: "bun", command: bunCommand };
   }
 
   if (!hasNode) {

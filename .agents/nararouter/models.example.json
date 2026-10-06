@@ -1,0 +1,54 @@
+{
+  "base_url": "https://router.bynara.id/v1",
+  "space_bunny_round_robin": {
+    "strategy": "roundRobin",
+    "sticky": 1,
+    "failure_policy": "fail_closed_to_fallback",
+    "cost_guard": "free_hosts_only",
+    "cycle": [
+      {
+        "provider": "opencode-go",
+        "model_id": "space-bunny-free",
+        "auth": "api_key",
+        "status": "pending"
+      },
+      {
+        "provider": "opencode",
+        "model_id": "space-bunny-free",
+        "auth": "none",
+        "status": "pending"
+      }
+    ],
+    "openrouter_reference_id": "stealth/space-bunny-alpha",
+    "fallback_model_id": "deepseek-v4-flash"
+  },
+  "profiles": {
+    "space_bunny_cycle": {
+      "strategy": "roundRobin",
+      "members": ["opencode-go/space-bunny-free", "opencode/space-bunny-free"],
+      "fallback": "deepseek-v4-flash",
+      "reasoning_effort": "low",
+      "cost_guard": "free_hosts_only"
+    },
+    "free_coding": {
+      "openrouter_reference_id": "stealth/space-bunny-alpha",
+      "nararouter_model_id": "<NARAROUTER_SPACE_BUNNY_MODEL_ID>",
+      "reasoning_effort": "low"
+    },
+    "fallback_coding": {
+      "nararouter_model_id": "deepseek-v4-flash",
+      "reasoning_effort": "medium",
+      "enable_only_if_returned_by_v1_models": true,
+      "requires_cost_approval": true
+    },
+    "cheap_general": {
+      "nararouter_model_id": "<CHEAP_HIGH_QUALITY_MODEL_FROM_LIVE_CATALOG>",
+      "reasoning_effort": "low"
+    },
+    "strong_paid": {
+      "nararouter_model_id": "<STRONG_PAID_MODEL_FROM_LIVE_CATALOG>",
+      "reasoning_effort": "medium",
+      "requires_cost_approval": true
+    }
+  }
+}

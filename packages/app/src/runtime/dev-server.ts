@@ -366,10 +366,14 @@ async function createRuntime(): Promise<AgentRuntime> {
       const { prepareDevTrajectoryRecovery } = await import("@elizaos/agent");
       await prepareDevTrajectoryRecovery(result, trajectoryRecoveryIpc);
     } catch (error) {
+      console.error(
+        "[dev-server] Dev trajectory recovery error details:",
+        error,
+      );
       // error-policy:J2 A failed ownership/recovery gate must not publish a runtime.
       await shutdownRuntime(result, "dev-server trajectory recovery failed");
       throw new Error(
-        "Development trajectory recovery failed before runtime readiness",
+        `Development trajectory recovery failed before runtime readiness: ${error instanceof Error ? error.message : String(error)}`,
         { cause: error },
       );
     }
