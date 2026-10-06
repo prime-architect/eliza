@@ -17,6 +17,7 @@ Previous pin: `27dec7b0` (2026-10-02, v2.0.3-beta.7) — research baseline; re-p
 | Date | Upstream range | Result | Notes |
 |---|---|---|---|
 | 2026-10-05 | (fork point) `65621da3` | fork created | baseline verification below |
+| 2026-10-06 | scaffold push `8eb4275` | `main` + `feature/fork-scaffolding` live on `prime-architect/eliza` | `develop` stays pristine upstream mirror |
 
 ## Baseline verification (2026-10-05, 7.7 GB / 2 vCPU container)
 
