@@ -209,7 +209,7 @@ export function registerMediaModels(runtime: IAgentRuntime): void {
       !hasExplicitCapabilityOverride(runtime, mediaModelOverrideKeys[modelType] ?? [])
     ) {
       logger.info(
-        `[OpenAI] Not registering ${modelType}: the configured endpoint does not serve it`,
+        `[OpenAI] Not registering ${modelType}: the configured endpoint does not serve it`
       );
       continue;
     }
