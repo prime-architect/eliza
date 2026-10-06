@@ -443,7 +443,7 @@ async function main() {
   const privateRoot = fs.mkdtempSync(
     path.join(os.tmpdir(), "eliza-android-e2e-private-"),
   );
-  let bundle;
+  let bundle: ReturnType<typeof createDeviceE2eBundle>;
   try {
     bundle = createDeviceE2eBundle({
       appDir,
@@ -455,7 +455,7 @@ async function main() {
     throw new Error("Android evidence initialization failed.");
   }
   let adb = null;
-  let serial;
+  let serial: string | undefined;
   let lease = null;
   let finalResult = "failed";
   let finalError = null;

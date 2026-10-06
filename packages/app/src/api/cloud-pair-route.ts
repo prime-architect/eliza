@@ -212,4 +212,3 @@ export async function handleCloudPairRoute(
   );
   return true;
 }
-

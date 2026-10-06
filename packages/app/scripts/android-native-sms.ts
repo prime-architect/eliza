@@ -73,7 +73,7 @@ const report = {
 };
 const leases = [];
 const installed = [];
-let applicationId;
+let applicationId: string;
 try {
   for (const serial of [...new Set([sender, receiver])].sort()) {
     if (
