@@ -196,6 +196,10 @@ function applyModelProviderRouting(
     transport: "direct",
     ...(primaryModel ? { primaryModel } : {}),
   };
+  serviceRouting.embeddings ??= {
+    backend: provider,
+    transport: "direct",
+  };
   config.serviceRouting = serviceRouting;
 }
 

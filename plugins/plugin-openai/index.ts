@@ -41,7 +41,14 @@ import {
 } from "./models/text";
 import { handleTokenizerDecode, handleTokenizerEncode } from "./models/tokenizer";
 import type { ImageGenerationResult, TextStreamResult } from "./types";
-import { getApiKey, getAuthHeader, getBaseURL, getSetting, isCerebrasMode } from "./utils/config";
+import {
+  getApiKey,
+  getAuthHeader,
+  getBaseURL,
+  getSetting,
+  isCerebrasMode,
+  isNaraRouterMode,
+} from "./utils/config";
 
 const env = process.env;
 (globalThis as Record<string, unknown>).AI_SDK_LOG_WARNINGS ??= false;
@@ -194,14 +201,16 @@ const mediaModels: NonNullable<Plugin["models"]> = {
 // plugin-discord's isImageDescriptionEnabled) skip gracefully instead of failing
 // on every attachment.
 export function registerMediaModels(runtime: IAgentRuntime): void {
-  const cerebras = isCerebrasMode(runtime);
+  const textOnly = isCerebrasMode(runtime) || isNaraRouterMode(runtime);
   const registrations: Array<Parameters<typeof registerProviderModels>[2][number]> = [];
   for (const [modelType, handler] of Object.entries(mediaModels)) {
     if (
-      cerebras &&
+      textOnly &&
       !hasExplicitCapabilityOverride(runtime, mediaModelOverrideKeys[modelType] ?? [])
     ) {
-      logger.info(`[OpenAI] Not registering ${modelType}: the Cerebras endpoint does not serve it`);
+      logger.info(
+        `[OpenAI] Not registering ${modelType}: the configured endpoint does not serve it`,
+      );
       continue;
     }
     registrations.push({

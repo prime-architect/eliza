@@ -115,7 +115,7 @@ console.log(
 );
 // Load .env files for parity with CLI mode (which loads via run-main.ts).
 const { config: loadDotenv } = await import("dotenv");
-loadDotenv({ quiet: true });
+loadDotenv({ quiet: true, override: true });
 console.log(
   `${getLogPrefix()} dotenv loaded (${elapsedSinceStartupTimingStart()}ms since ${STARTUP_TIMING_SOURCE}; module body ${elapsedSinceModuleBodyStart()}ms)`,
 );

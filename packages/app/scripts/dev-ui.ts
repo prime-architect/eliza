@@ -65,6 +65,11 @@ if (existsSync(_worktreeEnvPath)) {
   const { config: dotenvConfig } = await import("dotenv");
   dotenvConfig({ path: _worktreeEnvPath, override: false });
 }
+const _rootEnvPath = path.join(process.cwd(), ".env");
+if (existsSync(_rootEnvPath)) {
+  const { config: dotenvConfig } = await import("dotenv");
+  dotenvConfig({ path: _rootEnvPath, override: true });
+}
 
 function resolveCapacitorPluginNamesPath(devCwd) {
   const rootPackagesApp = path.join(
