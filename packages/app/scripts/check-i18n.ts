@@ -603,7 +603,7 @@ if (
   import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
 ) {
   const allowlistArg = process.argv.indexOf("--allowlist");
-  let result;
+  let result: ReturnType<typeof runI18nCheck>;
   try {
     result = runI18nCheck({
       strictTranslations: process.argv.includes("--strict-translations"),

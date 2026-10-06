@@ -8,7 +8,6 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const read = (path) => readFileSync(resolve(root, path), "utf8");
 
-
 test("standalone cloud image ships reviewed host code and invokes it after runtime initialization", () => {
   const docker = read("packages/app/deploy/Dockerfile.cloud-agent");
   const entry = read("packages/app/deploy/cloud-agent-shared.ts");
