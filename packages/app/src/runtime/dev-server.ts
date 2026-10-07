@@ -115,7 +115,7 @@ console.log(
 );
 // Load .env files for parity with CLI mode (which loads via run-main.ts).
 const { config: loadDotenv } = await import("dotenv");
-loadDotenv({ quiet: true });
+loadDotenv({ quiet: true, override: true });
 console.log(
   `${getLogPrefix()} dotenv loaded (${elapsedSinceStartupTimingStart()}ms since ${STARTUP_TIMING_SOURCE}; module body ${elapsedSinceModuleBodyStart()}ms)`,
 );
@@ -366,10 +366,14 @@ async function createRuntime(): Promise<AgentRuntime> {
       const { prepareDevTrajectoryRecovery } = await import("@elizaos/agent");
       await prepareDevTrajectoryRecovery(result, trajectoryRecoveryIpc);
     } catch (error) {
+      console.error(
+        "[dev-server] Dev trajectory recovery error details:",
+        error,
+      );
       // error-policy:J2 A failed ownership/recovery gate must not publish a runtime.
       await shutdownRuntime(result, "dev-server trajectory recovery failed");
       throw new Error(
-        "Development trajectory recovery failed before runtime readiness",
+        `Development trajectory recovery failed before runtime readiness: ${error instanceof Error ? error.message : String(error)}`,
         { cause: error },
       );
     }

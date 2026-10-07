@@ -179,7 +179,7 @@ if (!serial && onlineDevices.length !== 1) {
   );
 }
 
-let apkPath;
+let apkPath: ReturnType<typeof resolveApk>;
 try {
   apkPath = resolveApk(apkArg);
 } catch (error) {

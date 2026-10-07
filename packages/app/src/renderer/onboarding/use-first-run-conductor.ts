@@ -260,7 +260,6 @@ function runtimeChoiceBlock(): string {
       : "On this device";
   return [
     "[CHOICE:first-run id=runtime]",
-    `${FIRST_RUN_ACTION_PREFIX}runtime:cloud=Eliza Cloud (managed)`,
     `${FIRST_RUN_ACTION_PREFIX}runtime:local=${localLabel}`,
     `${FIRST_RUN_ACTION_PREFIX}runtime:remote=Connect to a remote agent`,
     "[/CHOICE]",

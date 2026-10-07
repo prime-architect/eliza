@@ -324,7 +324,7 @@ async function verifyOnDevice(adb, serial) {
 }
 
 async function main() {
-  let adb;
+  let adb: ReturnType<typeof resolveAdb>;
   try {
     adb = resolveAdb();
   } catch (error) {

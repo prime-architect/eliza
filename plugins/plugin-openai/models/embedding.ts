@@ -13,6 +13,7 @@ import {
   getEmbeddingModel,
   getSetting,
   isCerebrasMode,
+  isNaraRouterMode,
 } from "../utils/config";
 import { emitModelUsageEvent } from "../utils/events";
 
@@ -83,9 +84,12 @@ export async function handleTextEmbedding(
   // provider parsers (#18025).
   trimmedText = toWellFormedUnicode(trimmedText);
 
-  if (isCerebrasMode(runtime) && !hasExplicitEmbeddingEndpoint(runtime)) {
+  if (
+    (isCerebrasMode(runtime) || isNaraRouterMode(runtime)) &&
+    !hasExplicitEmbeddingEndpoint(runtime)
+  ) {
     throw new ElizaError(
-      "Cerebras does not provide embeddings. Configure OPENAI_EMBEDDING_URL or select a real embedding provider.",
+      "The configured text endpoint does not provide embeddings. Configure OPENAI_EMBEDDING_URL or select a real embedding provider.",
       { code: "EMBEDDING_PROVIDER_UNAVAILABLE" }
     );
   }

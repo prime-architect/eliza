@@ -5,11 +5,7 @@
  * panel on empty/default state rather than blocking render.
  */
 
-import {
-  getFirstRunProviderOption,
-  resolveServiceRoutingInConfig,
-  type SubscriptionProviderStatus,
-} from "@elizaos/host/protocol";
+import type { SubscriptionProviderStatus } from "@elizaos/host/protocol";
 import {
   type Dispatch,
   type SetStateAction,
@@ -18,7 +14,6 @@ import {
   useState,
 } from "react";
 import { client } from "../../api/client";
-import type { useCloudModelConfig } from "./useCloudModelConfig";
 import type { useProviderSelection } from "./useProviderSelection";
 export interface ProviderBootstrapState {
   /** True after the saved routing config has either loaded or failed. */
@@ -31,7 +26,6 @@ export interface ProviderBootstrapState {
 }
 export function useProviderBootstrap(
   selection: ReturnType<typeof useProviderSelection>,
-  cloudModel: ReturnType<typeof useCloudModelConfig>,
   enabled = true,
 ): ProviderBootstrapState {
   const [subscriptionStatus, setSubscriptionStatus] = useState<
@@ -57,30 +51,13 @@ export function useProviderBootstrap(
     void loadSubscriptionStatus();
     void (async () => {
       try {
-        const opts = await client.getFirstRunOptions();
-        cloudModel.setModelOptions({
-          nano: opts.models?.nano ?? [],
-          small: opts.models?.small ?? [],
-          medium: opts.models?.medium ?? [],
-          large: opts.models?.large ?? [],
-          mega: opts.models?.mega ?? [],
-        });
-      } catch {
-        // first-run options are best-effort
-      }
-      try {
         const cfg = await client.getConfig();
-        const llmText = resolveServiceRoutingInConfig(cfg)?.llmText;
-        const providerId = getFirstRunProviderOption(llmText?.backend)?.id;
-        const elizaCloudEnabledCfg =
-          llmText?.transport === "cloud-proxy" && providerId === "elizacloud";
-        cloudModel.initializeFromConfig(cfg, elizaCloudEnabledCfg);
         selection.initializeFromConfig(cfg);
       } catch {
         // config load is best-effort; defaults apply
       } finally {
         // Until this settles, rendering a provider-specific detail panel can
-        // flash the Local panel before the saved Cerebras/Cloud route arrives.
+        // flash the Local panel before the saved Cerebras route arrives.
         setRoutingConfigResolved(true);
       }
     })();

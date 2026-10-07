@@ -65,6 +65,11 @@ if (existsSync(_worktreeEnvPath)) {
   const { config: dotenvConfig } = await import("dotenv");
   dotenvConfig({ path: _worktreeEnvPath, override: false });
 }
+const _rootEnvPath = path.join(process.cwd(), ".env");
+if (existsSync(_rootEnvPath)) {
+  const { config: dotenvConfig } = await import("dotenv");
+  dotenvConfig({ path: _rootEnvPath, override: true });
+}
 
 function resolveCapacitorPluginNamesPath(devCwd) {
   const rootPackagesApp = path.join(
@@ -395,7 +400,11 @@ function resolveApiRuntimeCommand(env) {
           : "Bun runtime was selected, but bun/bunx was not found in PATH.",
       );
     }
-    return { runtime: "bun", command: which("bun") ?? "bun" };
+    const bunCommand =
+      (process.versions?.bun ? process.execPath : null) ??
+      which("bun") ??
+      "bun";
+    return { runtime: "bun", command: bunCommand };
   }
 
   if (!hasNode) {

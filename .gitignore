@@ -320,6 +320,7 @@ node_modules/
 # Environment variables
 # Editor directories and files
 .vscode
+.agents/nararouter/.cycle_index
 *.suo
 *.ntvs*
 *.njsproj

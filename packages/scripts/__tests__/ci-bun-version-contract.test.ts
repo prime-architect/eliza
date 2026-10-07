@@ -57,11 +57,7 @@ interface InventorySite {
 const CANONICAL = "1.4.2";
 const SHA = "0c5077e51419868618aeaa5fe8019c62421857d6";
 
-const GATE_WORKFLOWS = [
-  "ci.yml",
-  "pr-static-smoke.yml",
-  "cloud-cf-release.yml",
-];
+const GATE_WORKFLOWS = ["ci.yml", "pr-static-smoke.yml"];
 
 // A gate stub that pins via a BUN_VERSION env literal and references it from
 // the step by expression — the shape the real gates use. The comment naming
@@ -227,14 +223,8 @@ describe("ci-bun-version-contract", () => {
     );
   });
 
-  test("fails loudly when the canonical release workflow is missing (#19183)", () => {
-    // The dispatch wrapper delegates every install and build to the canonical
-    // release workflow. A missing release gate must fail loudly, not silently
-    // pass because the wrapper itself needs no Bun runtime.
-    expectViolation(
-      buildRepo({ overrides: { "cloud-cf-release.yml": null } }),
-      /cloud-cf-release\.yml/,
-    );
+  test("fails loudly when the canonical CI workflow is missing", () => {
+    expectViolation(buildRepo({ overrides: { "ci.yml": null } }), /ci\.yml/);
   });
 
   test("fails when the source of truth itself floats", () => {

@@ -912,7 +912,7 @@
         let navigationSequence = 0;
         const navigateReady = async (options) => {
           const url = `about:blank#canvas-e2e-${++navigationSequence}`;
-          let event;
+          let event: Record<string, unknown> | null = null;
           const listener = window.Capacitor.addListener(
             descriptor.name,
             "webViewReady",
@@ -1340,7 +1340,7 @@
       assert(Array.isArray(result.messages), "real SMS provider result");
       await rejects("sendSms", { address: "", body: "" });
       if (descriptor.smsRole) {
-        let receipt;
+        let receipt: Awaited<ReturnType<typeof call>>;
         if (descriptor.smsRole === "sender") {
           receipt = await call("sendSms", {
             address: `+1555521${descriptor.smsPeerPort}`,
@@ -1683,8 +1683,8 @@
         (await call("isCapturingAudioFrames")).capturing === false,
         "audio capture starts stopped",
       );
-      let listener;
-      let timer;
+      let listener: { remove(): Promise<void> } | null = null;
+      let timer: ReturnType<typeof setTimeout> | null = null;
       const frame = new Promise((resolve, reject) => {
         timer = setTimeout(
           () => reject(new Error("native PCM frame timed out")),
@@ -1819,8 +1819,8 @@
         const secondUrl = page("Second fixture", "Second visible page");
         const waitForPage = async (title, previousText) => {
           const deadline = Date.now() + 8000;
-          let result;
-          let error;
+          let result: Awaited<ReturnType<typeof call>>;
+          let error: string | null = null;
           while (Date.now() < deadline) {
             try {
               result = await call("readPage", { ...identity, id });

@@ -223,9 +223,6 @@ jobs:
           path: test-results/scenario-runner/live-information
           if-no-files-found: warn
           retention-days: 14
-      - name: Cloud end-to-end
-        if: inputs.suite == 'all' || inputs.suite == 'cloud'
-        run: bun run test:cloud:e2e
       - name: Voice service
         if: inputs.suite == 'all' || inputs.suite == 'voice'
         run: bun run --cwd packages/testing test:real-service:voice

@@ -99,7 +99,6 @@ describe("Android Play account-deletion contract", () => {
   });
 
   it("keeps deletion admission fenced until the lifecycle reservation exists", () => {
-    const route = read("cloud/api/v1/me/account-deletion/route.ts");
     const lifecycle = read("cloud/shared/src/lib/services/account-deletion.ts");
     const resourcePurge = read(
       "cloud/shared/src/lib/services/account-deletion-resource-purge.ts",
@@ -109,7 +108,6 @@ describe("Android Play account-deletion contract", () => {
     const publicPage = read(
       "ui/src/cloud/public-pages/pages/legal/account-deletion-page.tsx",
     );
-    expect(route).toContain('body.confirmation !== "DELETE"');
     expect(lifecycle).toContain('"TRANSFER_REQUIRED"');
     expect(lifecycle).toContain('"LIFECYCLE_RESERVATION_REQUIRED"');
     expect(lifecycle).toContain("reservePersonalAccountDeletion");
@@ -128,8 +126,5 @@ describe("Android Play account-deletion contract", () => {
     expect(publicPage).toContain("30-day recovery");
     expect(publicPage).toContain("support@eliza.cloud");
     expect(publicPage).not.toContain("sign back in");
-    expect(read("cloud/api/src/cron.ts")).toContain(
-      '"/api/cron/process-account-deletions"',
-    );
   });
 });

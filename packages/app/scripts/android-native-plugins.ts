@@ -270,7 +270,7 @@ async function main() {
     };
     if (!args.includes("--no-build")) {
       console.log(`Building ${selected.length} Android native test APKs`);
-      let build;
+      let build: ReturnType<typeof run>;
       try {
         build = run(
           path.join(root, "packages/app/platforms/android/gradlew"),
@@ -308,7 +308,7 @@ async function main() {
         problems: [],
       };
       report.results.push(entry);
-      let applicationId;
+      let applicationId: string;
       let fixtureInstalled = false;
       let preservePackageForRecovery = false;
       const saveArtifact = ({ name, bytes }, prefix = "") => {

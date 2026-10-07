@@ -64,10 +64,6 @@ export const SCRIPT_TEST_EXCLUSIONS = new Map([
     "plugin-meetings test:e2e owns this Node browser/audio capture suite",
   ],
   [
-    "packages/cloud/scripts/admin/run-integration-tests.test.ts",
-    "the root test:cloud:integration command owns this Node node:sqlite lifecycle suite",
-  ],
-  [
     "packages/scripts/__tests__/release-verdaccio.integration.test.ts",
     "the release-candidate workflow owns this slow real-registry transport test",
   ],

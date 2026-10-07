@@ -184,7 +184,7 @@ export function parseAndroidTarget(target) {
   // Map the parsed arch token to the Android ABI directory name. arm64 →
   // arm64-v8a (only Android ABI for aarch64); x86_64 and riscv64 share
   // their name with the parsed token.
-  let androidAbi;
+  let androidAbi: string;
   if (arch === "x86_64") androidAbi = "x86_64";
   else if (arch === "riscv64") androidAbi = "riscv64";
   else androidAbi = "arm64-v8a";
@@ -1593,7 +1593,7 @@ function locateBuiltGgmlLibs(buildDir) {
   const stack = [buildDir];
   while (stack.length > 0) {
     const dir = stack.pop();
-    let entries;
+    let entries: fs.Dirent[];
     try {
       entries = fs.readdirSync(dir, { withFileTypes: true });
     } catch {
@@ -1646,7 +1646,7 @@ function locateBuiltGgmlLibs(buildDir) {
  * Exported for unit tests.
  */
 export function readSoname(filePath) {
-  let fd;
+  let fd: number;
   try {
     fd = fs.openSync(filePath, "r");
     const head = Buffer.alloc(64); // ELF64 header is 64 bytes
@@ -1752,7 +1752,7 @@ function locateBuiltLib(buildDir, soName) {
   const stack = [buildDir];
   while (stack.length > 0) {
     const dir = stack.pop();
-    let entries;
+    let entries: fs.Dirent[];
     try {
       entries = fs.readdirSync(dir, { withFileTypes: true });
     } catch {
@@ -1793,7 +1793,7 @@ function locateBuiltLib(buildDir, soName) {
  */
 // Cache of the resolved llvm-strip path (from the Android NDK toolchain).
 // Set once on first call so we don't re-walk the NDK dir for every artifact.
-let _ndkLlvmStripPathCache;
+let _ndkLlvmStripPathCache: string | null | undefined;
 function locateNdkLlvmStrip() {
   if (_ndkLlvmStripPathCache !== undefined) return _ndkLlvmStripPathCache;
   // Honor the same env-var ladder as build-llama-cpp-mtp's resolveAndroidNdk()
@@ -2161,8 +2161,8 @@ export async function main(argv = process.argv.slice(2)) {
     return;
   }
 
-  let srcDir;
-  let srcDescription;
+  let srcDir: string;
+  let srcDescription: string;
   if (args.srcDir) {
     if (!fs.existsSync(path.join(args.srcDir, "CMakeLists.txt"))) {
       throw new Error(

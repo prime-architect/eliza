@@ -70,7 +70,6 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.4.5",
-    "@elizaos/cloud-test-mocks": "workspace:*",
     "@elizaos/plugin-sql": "workspace:*",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",

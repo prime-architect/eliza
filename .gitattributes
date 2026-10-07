@@ -23,6 +23,7 @@ patches/CHECKSUMS.sha256 -text
 *.java text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+*.css text eol=lf
 
 # These native helper sources are embedded verbatim into a checked-in resource.
 # Keep their bytes stable when Windows checks out with core.autocrlf=true.

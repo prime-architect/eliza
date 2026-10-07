@@ -47,6 +47,8 @@ it.each([
   ["cerebras", "https://api.openai.com/v1", "https://api.cerebras.ai/v1"],
   ["openai", "https://custom-gateway.example/v1", "https://custom-gateway.example/v1"],
   ["cerebras", "https://custom-gateway.example/v1", "https://custom-gateway.example/v1"],
+  ["openai", "https://router.bynara.id/v1", "https://router.bynara.id/v1"],
+  ["nararouter", "https://router.bynara.id/v1", "https://router.bynara.id/v1"],
 ])(
   "uses selector %s without leaking credentials to a stale first-party endpoint",
   (provider, base, expected) => {

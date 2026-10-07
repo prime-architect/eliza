@@ -23,7 +23,7 @@ test("staged trigram archive loads and executes the SQL extension", async () => 
   const root = await fs.mkdtemp(
     path.join(os.tmpdir(), "android-pglite-stage-"),
   );
-  let db;
+  let db: InstanceType<typeof PGlite> | null = null;
   try {
     const source = path.join(root, "dist-mobile");
     const main = path.join(root, "android/app/src/main");

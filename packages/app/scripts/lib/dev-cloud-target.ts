@@ -7,7 +7,7 @@
 const TARGET_FLAG = "--cloud-target";
 const TARGET_ENV = "ELIZA_DEV_CLOUD_TARGET";
 const ENV_AUTHORITY_KEY = "ELIZA_DEV_CLOUD_ENV_AUTHORITY";
-const DEFAULT_TARGET = "staging";
+const DEFAULT_TARGET = "offline";
 const VALID_TARGETS = new Set(["staging", "production", "offline"]);
 
 const TARGET_CONFIG = Object.freeze({

@@ -159,16 +159,7 @@ export const SETTINGS_NON_CATALOG_SECTION_META = [
       "keyboard",
     ],
   },
-  {
-    id: "cloud-overview",
-    defaultLabel: "Overview",
-    group: "cloud",
-  },
-  {
-    id: "cloud-agents",
-    defaultLabel: "Agents",
-    group: "cloud",
-  },
+
   {
     id: "android-account-lifecycle",
     defaultLabel: "Account & Privacy",

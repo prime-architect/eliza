@@ -61,43 +61,6 @@ const config = {
       ],
       ignore: ["dist/**", ".turbo/**"],
     },
-    "packages/cloud/api": {
-      entry: [
-        "src/index.ts",
-        "src/_generate-router.mjs",
-        "src/stubs/**/*.ts",
-        "__tests__/**/*.ts",
-        "test/**/*.mjs",
-        "test/**/*.ts",
-      ],
-      project: ["**/*.{ts,tsx}", "src/_generate-router.mjs", "test/**/*.mjs"],
-      ignore: [".wrangler/**", "dist/**", ".turbo/**"],
-      ignoreDependencies: ["wrangler"],
-    },
-    "packages/cloud/services/agent-server": {
-      entry: ["src/index.ts", "src/**/*.ts", "__tests__/**/*.ts"],
-      project: ["src/**/*.ts", "__tests__/**/*.ts"],
-      ignore: ["dist/**", ".turbo/**"],
-      ignoreDependencies: ["bun-types"],
-    },
-    "packages/cloud/services/gateway-discord": {
-      entry: ["src/index.ts", "src/**/*.ts", "tests/**/*.ts"],
-      project: ["src/**/*.ts", "tests/**/*.ts"],
-      ignore: ["dist/**", ".turbo/**"],
-      ignoreDependencies: ["bun-types"],
-    },
-    "packages/cloud/services/gateway-webhook": {
-      entry: ["src/index.ts", "src/**/*.ts", "__tests__/**/*.ts"],
-      project: ["src/**/*.ts", "__tests__/**/*.ts"],
-      ignore: ["dist/**", ".turbo/**"],
-      ignoreDependencies: ["bun-types"],
-    },
-    "packages/cloud/services/operator": {
-      entry: ["pepr.ts"],
-      project: ["pepr.ts", "capabilities/**/*.ts"],
-      ignore: ["dist/**", ".turbo/**"],
-      ignoreDependencies: ["@types/bun", "esbuild", "prettier", "uuid"],
-    },
     "packages/cloud/shared": {
       entry: [
         "src/index.ts",

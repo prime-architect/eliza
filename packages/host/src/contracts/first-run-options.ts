@@ -467,14 +467,8 @@ export const DIRECT_ACCOUNT_PROVIDER_BY_FIRST_RUN_PROVIDER = {
   Record<FirstRunProviderId, LinkedAccountProviderId>
 >;
 
-export const FIRST_RUN_CLOUD_PROVIDER_OPTIONS = [
-  {
-    id: "elizacloud",
-    name: "Eliza Cloud",
-    description:
-      "Managed cloud infrastructure. Wallets, LLMs, and RPCs included.",
-  },
-] as const satisfies ReadonlyArray<CloudProviderOption>;
+export const FIRST_RUN_CLOUD_PROVIDER_OPTIONS: readonly CloudProviderOption[] =
+  [];
 
 export type FirstRunLocalProviderId = Exclude<FirstRunProviderId, "elizacloud">;
 

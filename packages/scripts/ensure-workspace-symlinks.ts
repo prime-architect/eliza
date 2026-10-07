@@ -98,7 +98,15 @@ function ensureSymlink(linkPath, targetDir) {
   }
   mkdirSync(dirname(linkPath), { recursive: true });
   const rel = relative(dirname(linkPath), targetDir);
-  symlinkSync(rel, linkPath, "dir");
+  try {
+    symlinkSync(rel, linkPath, "dir");
+  } catch (err) {
+    if (process.platform === "win32") {
+      symlinkSync(resolve(targetDir), linkPath, "junction");
+    } else {
+      throw err;
+    }
+  }
   return true;
 }
 

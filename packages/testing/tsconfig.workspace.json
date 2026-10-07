@@ -42,7 +42,6 @@
       "@elizaos/plugin-discord/*": ["../../plugins/plugin-discord/*"],
       "@elizaos/plugin-elizacloud/*": ["../../plugins/plugin-elizacloud/src/*"],
       "@elizaos/capacitor-*": ["../../plugins/plugin-native-*/src/index.ts"],
-      "@elizaos/cloud-test-mocks/*": ["../cloud/test-mocks/src/*"],
       "@elizaos/plugin-health/*": ["../../plugins/plugin-health/src/*.ts"],
       "@elizaos/plugin-calendar/*": ["../../plugins/plugin-calendar/src/*.ts"],
       "@elizaos/plugin-native-wifi/*": [

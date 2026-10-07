@@ -69,10 +69,7 @@
       ],
       "outputs": ["web-dist/**"]
     },
-    "@elizaos/cloud-api#build": {
-      "dependsOn": ["^build"],
-      "outputs": []
-    },
+
     "@elizaos/ui#build": {
       "dependsOn": [
         "@elizaos/host#build",
@@ -190,17 +187,7 @@
         "@elizaos/plugin-knowledge#build"
       ]
     },
-    "@elizaos/cloud-api#typecheck": {
-      "dependsOn": [
-        "typecheck:deps",
-        "@elizaos/cloud-shared#typecheck",
-        "@elizaos/auth#build",
-        "@elizaos/plugin-assistant#build",
-        "@elizaos/plugin-sqlite#build",
-        "@elizaos/plugin-web-search#build",
-        "@elizaos/plugin-wallet#build"
-      ]
-    },
+
     "@elizaos/cloud-shared#typecheck": {
       "dependsOn": [
         "typecheck:deps",
@@ -363,27 +350,7 @@
       "dependsOn": ["^typecheck:deps"],
       "outputs": []
     },
-    "@elizaos/agent-server#typecheck": {
-      "dependsOn": ["typecheck:deps", "@elizaos/plugin-sql#build"]
-    },
-    "@elizaos/cloud-e2e#typecheck": {
-      "dependsOn": [
-        "typecheck:deps",
-        "@elizaos/ui#build",
-        "@elizaos/auth#build",
-        "@elizaos/plugin-web-search#build"
-      ]
-    },
-    "@elizaos/container-control-plane#typecheck": {
-      "dependsOn": [
-        "typecheck:deps",
-        "^build",
-        "@elizaos/auth#build",
-        "@elizaos/plugin-assistant#build",
-        "@elizaos/plugin-sqlite#build",
-        "@elizaos/plugin-web-search#build"
-      ]
-    },
+
     "@elizaos/electrobun#typecheck": {
       "dependsOn": [
         "typecheck:deps",
@@ -495,13 +462,7 @@
     "@elizaos/cloud-services-common#typecheck": {
       "dependsOn": ["typecheck:deps", "@elizaos/core#build"]
     },
-    "@elizaos/cloud-test-mocks#typecheck": {
-      "dependsOn": [
-        "typecheck:deps",
-        "@elizaos/auth#build",
-        "@elizaos/plugin-web-search#build"
-      ]
-    },
+
     "@elizaos/configbench#typecheck": {
       "dependsOn": [
         "typecheck:deps",
@@ -509,12 +470,7 @@
         "@elizaos/plugin-openai#build"
       ]
     },
-    "@elizaos/gateway-discord#typecheck": {
-      "dependsOn": ["typecheck:deps", "^build"]
-    },
-    "@elizaos/gateway-webhook#typecheck": {
-      "dependsOn": ["typecheck:deps", "@elizaos/core#build"]
-    },
+
     "@elizaos/native-activity-tracker#typecheck": {
       "dependsOn": ["typecheck:deps", "@elizaos/core#build"]
     },

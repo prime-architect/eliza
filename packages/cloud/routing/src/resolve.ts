@@ -16,7 +16,7 @@ import {
 } from "./features.js";
 import type { CloudRoute, FeatureCloudRoute, RouteSpec } from "./types.js";
 
-const CLOUD_BASE_FALLBACK = "https://api.eliza.app/api/v1";
+const CLOUD_BASE_FALLBACK = "";
 
 export interface RuntimeSettings {
   getSetting(key: string): string | boolean | number | null | undefined;
@@ -115,20 +115,11 @@ function buildCloudProxyRoute(
   };
 }
 
-export function isCloudConnected(runtime: RuntimeSettings): boolean {
-  return (
-    getSettingAsString(runtime, "ELIZAOS_CLOUD_API_KEY") !== null &&
-    isCloudRoutingEnabled(runtime)
-  );
+export function isCloudConnected(_runtime: RuntimeSettings): boolean {
+  return false;
 }
 
-function isCloudRoutingEnabled(runtime: RuntimeSettings): boolean {
-  const enabled = runtime.getSetting("ELIZAOS_CLOUD_ENABLED");
-  if (enabled === true) return true;
-  if (typeof enabled === "string") {
-    const lower = enabled.trim().toLowerCase();
-    return lower === "true" || lower === "1";
-  }
+function isCloudRoutingEnabled(_runtime: RuntimeSettings): boolean {
   return false;
 }
 

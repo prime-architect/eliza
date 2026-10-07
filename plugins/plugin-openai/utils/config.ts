@@ -66,7 +66,10 @@ export function getBooleanSetting(
 }
 function compatibleProvider(value: string | undefined): string | undefined {
   const provider = value?.trim().toLowerCase();
-  return provider === "openai" || provider === "cerebras" || provider === "evolink"
+  return provider === "openai" ||
+    provider === "cerebras" ||
+    provider === "evolink" ||
+    provider === "nararouter"
     ? provider
     : undefined;
 }
@@ -92,8 +95,13 @@ function explicitCompatibleBase(
         ? "cerebras"
         : hostname === "direct.evolink.ai"
           ? "evolink"
-          : undefined;
-  return owner && owner !== provider ? undefined : baseURL;
+          : hostname === "router.bynara.id"
+            ? "nararouter"
+            : undefined;
+  if (!owner) return baseURL;
+  if (owner === provider) return baseURL;
+  if (owner === "nararouter" && provider === "openai") return baseURL;
+  return undefined;
 }
 
 /**
@@ -141,18 +149,42 @@ export function isEvoLinkMode(runtime: IAgentRuntime): boolean {
   return false;
 }
 /**
+ * True when the resolved base URL or `ELIZA_PROVIDER` setting marks the
+ * runtime as using NaraRouter's OpenAI-compatible endpoint.
+ */
+export function isNaraRouterMode(runtime: IAgentRuntime): boolean {
+  const baseURL = getSetting(runtime, "OPENAI_BASE_URL");
+  if (baseURL && /(^|\.)router\.bynara\.id(\/|$)/i.test(baseURL)) {
+    return true;
+  }
+  const explicitProvider = compatibleProvider(getSetting(runtime, "ELIZA_PROVIDER"));
+  if (explicitProvider === "nararouter") return true;
+  const naraKey = getSetting(runtime, "NARAROUTER_API_KEY");
+  if (
+    naraKey &&
+    !getSetting(runtime, "OPENAI_API_KEY") &&
+    !getSetting(runtime, "OPENAI_BASE_URL")
+  ) {
+    return true;
+  }
+  return false;
+}
+/**
  * Identifies the backend selected by this OpenAI-compatible plugin. Telemetry
  * must distinguish the transport implementation from the service that
  * actually handled and billed the request.
  */
 export function getUsageProvider(
   runtime: IAgentRuntime
-): "cerebras" | "evolink" | "openai" | "openrouter" {
+): "cerebras" | "evolink" | "openai" | "openrouter" | "nararouter" {
   if (isCerebrasMode(runtime)) {
     return "cerebras";
   }
   if (isEvoLinkMode(runtime)) {
     return "evolink";
+  }
+  if (isNaraRouterMode(runtime)) {
+    return "nararouter";
   }
   return "openai";
 }
@@ -174,7 +206,13 @@ export function getApiKey(runtime: IAgentRuntime): string | undefined {
       return evolinkKey;
     }
   }
-  return getSetting(runtime, "OPENAI_API_KEY");
+  if (isNaraRouterMode(runtime)) {
+    const naraKey = getSetting(runtime, "NARAROUTER_API_KEY");
+    if (naraKey) {
+      return naraKey;
+    }
+  }
+  return getSetting(runtime, "OPENAI_API_KEY") ?? getSetting(runtime, "NARAROUTER_API_KEY");
 }
 export function getEmbeddingApiKey(runtime: IAgentRuntime): string | undefined {
   const embeddingApiKey = getSetting(runtime, "OPENAI_EMBEDDING_API_KEY");
@@ -228,11 +266,18 @@ export function resolveOpenAIBaseURL(
       (read("EVOLINK_API_KEY") !== undefined &&
         read("OPENAI_API_KEY") === undefined &&
         openAIBaseURL === undefined);
+  const naraRouterMode =
+    (openAIBaseURL !== undefined && /(^|\.)router\.bynara\.id(\/|$)/i.test(openAIBaseURL)) ||
+    explicitProvider === "nararouter" ||
+    (read("NARAROUTER_API_KEY") !== undefined &&
+      read("OPENAI_API_KEY") === undefined &&
+      openAIBaseURL === undefined);
   return (
     normalizeEndpointSetting(options.mockBaseURL) ??
     openAIBaseURL ??
     (cerebrasMode ? (read("CEREBRAS_BASE_URL") ?? "https://api.cerebras.ai/v1") : undefined) ??
     (evolinkMode ? (read("EVOLINK_BASE_URL") ?? "https://direct.evolink.ai/v1") : undefined) ??
+    (naraRouterMode ? (read("NARAROUTER_BASE_URL") ?? "https://router.bynara.id/v1") : undefined) ??
     "https://api.openai.com/v1"
   );
 }
@@ -295,11 +340,20 @@ function getCerebrasLargeModel(runtime: IAgentRuntime): string | undefined {
 function getEvoLinkModel(runtime: IAgentRuntime): string | undefined {
   return isEvoLinkMode(runtime) ? (getSetting(runtime, "EVOLINK_MODEL") ?? "gpt-5.2") : undefined;
 }
+function getNaraRouterModel(runtime: IAgentRuntime): string | undefined {
+  return isNaraRouterMode(runtime)
+    ? (getSetting(runtime, "NARAROUTER_MODEL") ??
+        getSetting(runtime, "OPENAI_SMALL_MODEL") ??
+        getSetting(runtime, "SMALL_MODEL") ??
+        "nemotron-3.5-lightning-free")
+    : undefined;
+}
 export function getSmallModel(runtime: IAgentRuntime): string {
   return (
     getSetting(runtime, "OPENAI_SMALL_MODEL") ??
     getCerebrasSmallModel(runtime) ??
     getEvoLinkModel(runtime) ??
+    getNaraRouterModel(runtime) ??
     getSetting(runtime, "SMALL_MODEL") ??
     "gpt-5.6-luna"
   );
@@ -309,6 +363,7 @@ export function getNanoModel(runtime: IAgentRuntime): string {
     getSetting(runtime, "OPENAI_NANO_MODEL") ??
     getCerebrasSmallModel(runtime) ??
     getEvoLinkModel(runtime) ??
+    getNaraRouterModel(runtime) ??
     getSetting(runtime, "NANO_MODEL") ??
     getSmallModel(runtime)
   );
@@ -318,6 +373,7 @@ export function getMediumModel(runtime: IAgentRuntime): string {
     getSetting(runtime, "OPENAI_MEDIUM_MODEL") ??
     getCerebrasSmallModel(runtime) ??
     getEvoLinkModel(runtime) ??
+    getNaraRouterModel(runtime) ??
     getSetting(runtime, "MEDIUM_MODEL") ??
     getSmallModel(runtime)
   );
@@ -327,6 +383,7 @@ export function getLargeModel(runtime: IAgentRuntime): string {
     getSetting(runtime, "OPENAI_LARGE_MODEL") ??
     getCerebrasLargeModel(runtime) ??
     getEvoLinkModel(runtime) ??
+    getNaraRouterModel(runtime) ??
     getSetting(runtime, "LARGE_MODEL") ??
     "gpt-5.6-sol"
   );
@@ -344,6 +401,7 @@ export function getResponseHandlerModel(runtime: IAgentRuntime): string {
     getSetting(runtime, "OPENAI_SHOULD_RESPOND_MODEL") ??
     getCerebrasSmallModel(runtime) ??
     getEvoLinkModel(runtime) ??
+    getNaraRouterModel(runtime) ??
     getSetting(runtime, "RESPONSE_HANDLER_MODEL") ??
     getSetting(runtime, "SHOULD_RESPOND_MODEL") ??
     getSmallModel(runtime)
@@ -355,6 +413,7 @@ export function getActionPlannerModel(runtime: IAgentRuntime): string {
     getSetting(runtime, "OPENAI_PLANNER_MODEL") ??
     getCerebrasSmallModel(runtime) ??
     getEvoLinkModel(runtime) ??
+    getNaraRouterModel(runtime) ??
     getSetting(runtime, "ACTION_PLANNER_MODEL") ??
     getSetting(runtime, "PLANNER_MODEL") ??
     getMediumModel(runtime)
