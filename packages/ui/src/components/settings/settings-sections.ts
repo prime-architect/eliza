@@ -11,9 +11,7 @@
 import {
   Archive,
   BellRing,
-  Bot,
   Brain,
-  Cloud,
   KeyRound,
   LayoutGrid,
   Lock,
@@ -143,16 +141,7 @@ const SecuritySettingsSection = lazy(() =>
     default: m.SecuritySettingsSection,
   })),
 );
-const CloudOverviewSection = lazy(() =>
-  import("./CloudOverviewSection").then((m) => ({
-    default: m.CloudOverviewSection,
-  })),
-);
-const CloudAgentsSection = lazy(() =>
-  import("./CloudAgentsSection").then((m) => ({
-    default: m.CloudAgentsSection,
-  })),
-);
+
 const AndroidAccountLifecycleSection = lazy(() =>
   import("../../android-cloud/AndroidAccountLifecycleSection").then((m) => ({
     default: m.AndroidAccountLifecycleSection,
@@ -542,39 +531,7 @@ const BUILTIN_SECTION_DEFINITIONS: readonly BuiltinSectionDefinition[] = [
   // live in the late-registered Cloud group / cockpit runtime registry, not the
   // built-in QA route catalog.
   // ---------------------------------------------------------------------------
-  {
-    ...nonCatalogMeta("cloud-overview"),
-    catalog: false,
-    icon: Cloud,
-    tone: "accent",
-    hue: "accent",
-    labelKey: "settings.sections.cloudOverview.label",
-    titleKey: "settings.sections.cloudOverview.title",
-    defaultTitle: "Eliza Cloud",
-    order: 1.45,
-    cloudOnly: true,
-    Component: CloudOverviewSection,
-  },
-  // Eliza Cloud agent manager — surfaces in Settings (list / switch /
-  // create+name / delete agents) under the local Cloud group with the upsell
-  // overview, while full Cloud-only account/billing/API surfaces remain opt-in
-  // through registerCloudSettingsSections().
-  {
-    ...nonCatalogMeta("cloud-agents"),
-    catalog: false,
-    icon: Bot,
-    tone: "accent",
-    hue: "accent",
-    labelKey: "settings.sections.cloudAgents.label",
-    titleKey: "settings.sections.cloudAgents.title",
-    defaultTitle: "Eliza Cloud Agents",
-    order: 1.55,
-    // Hidden for MVP — agent management renders inside the single "Eliza
-    // Cloud" tab (CloudOverviewSection). Deep-link still resolves.
-    viewKind: "developer",
-    cloudOnly: true,
-    Component: CloudAgentsSection,
-  },
+
   {
     ...nonCatalogMeta("android-account-lifecycle"),
     catalog: false,

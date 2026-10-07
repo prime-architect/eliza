@@ -6,74 +6,22 @@
  */
 
 import type {
-  ModelOption,
   SUBSCRIPTION_PROVIDER_SELECTIONS,
   SubscriptionProviderSelectionId,
 } from "@elizaos/host/protocol";
-import { Cloud, Cpu, KeyRound, LogIn, ShieldCheck } from "lucide-react";
+import { Cpu, KeyRound, ShieldCheck } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
-import { useState } from "react";
 import { useAppSelector } from "../../state/app-store";
-import { openExternalUrl } from "../../utils/openExternalUrl";
 import { AccountList } from "../accounts/AccountList";
 import { LocalInferencePanel } from "../local-inference/LocalInferencePanel";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Button } from "../ui/button";
 import { ApiKeyConfig } from "./ApiKeyConfig";
-import type { CloudModelSchema } from "./cloud-model-schema";
-import { ProviderRoutingPanel } from "./ProviderRoutingPanel";
 import type { ServingAxes } from "./resolveServingAxes";
-import { servingProviderLabel } from "./resolveServingAxes";
 import { SettingsActionButton } from "./settings-agent-rows";
 import type { PluginInfo } from "./useProviderEntries";
 
 type SubscriptionProviderSelection =
   (typeof SUBSCRIPTION_PROVIDER_SELECTIONS)[number];
-type Translate = (key: string, vars?: Record<string, unknown>) => string;
-/**
- * Unsigned Cloud is an account fact, not a serving-source fact. Keep its copy
- * aligned with the same live serving axes used by the Intelligence summary so
- * a working direct provider is never mislabeled as Local.
- */
-export function describeUnsignedCloudChat(
-  axes: ServingAxes,
-  t: Translate,
-  surface: "panel" | "tile",
-): string {
-  if (axes.inference === "external") {
-    const provider =
-      servingProviderLabel(axes.activeChatProvider) || "an external provider";
-    return surface === "tile"
-      ? t("providerswitcher.cloudTileUnsignedExternalDescription", {
-          defaultValue: `Sign in to use managed models. Chat replies keep using ${provider} until then.`,
-          provider,
-        })
-      : t("providerpanels.cloudUnsignedUsingExternal", {
-          defaultValue: `Eliza Cloud isn't signed in. Chat replies are using ${provider}.`,
-          provider,
-        });
-  }
-  if (axes.inference === "local") {
-    return surface === "tile"
-      ? t("providerswitcher.cloudTileUnsignedDescription", {
-          defaultValue:
-            "Sign in to use managed models. Chat replies use Local until then.",
-        })
-      : t("providerpanels.cloudUnsignedUsingLocal", {
-          defaultValue:
-            "Eliza Cloud isn't signed in. Chat replies are using Local.",
-        });
-  }
-  return surface === "tile"
-    ? t("providerswitcher.cloudTileUnsignedCurrentDescription", {
-        defaultValue:
-          "Sign in to use managed models. Your current chat provider stays unchanged until then.",
-      })
-    : t("providerpanels.cloudUnsignedCurrentProvider", {
-        defaultValue:
-          "Eliza Cloud isn't signed in. Your current chat provider stays unchanged.",
-      });
-}
+
 function ProviderPanelHeader({
   icon: Icon,
   title,
@@ -98,19 +46,17 @@ function ProviderPanelHeader({
     </header>
   );
 }
+
 export function LocalProviderPanel({
   cloudCallsDisabled,
   routingModeSaving,
   onSelectLocalOnly,
   runtime,
-  servingFallback = false,
 }: {
   cloudCallsDisabled: boolean;
   routingModeSaving: boolean;
   onSelectLocalOnly: () => void;
   runtime: ServingAxes["runtime"];
-  /** Cloud is configured but unsigned-in, so Local is answering chat. */
-  servingFallback?: boolean;
 }) {
   const t = useAppSelector((s) => s.t);
   const remoteRuntime = runtime === "remote";
@@ -149,14 +95,6 @@ export function LocalProviderPanel({
         </SettingsActionButton>
       </ProviderPanelHeader>
       <div className="p-3 sm:px-4">
-        {servingFallback ? (
-          <div className="mb-3 rounded-sm border border-warn/30 bg-warn/5 px-3 py-2 text-warn text-xs">
-            {t("providerpanels.localFallbackBecauseCloudUnsigned", {
-              defaultValue:
-                "Answering chat because Eliza Cloud isn't signed in.",
-            })}
-          </div>
-        ) : null}
         {remoteRuntime ? (
           <p className="text-sm text-muted">
             {t("providerpanels.remoteHostReady", {
@@ -167,170 +105,6 @@ export function LocalProviderPanel({
           <LocalInferencePanel />
         )}
       </div>
-    </div>
-  );
-}
-export interface CloudPanelProps {
-  cloudCallsDisabled: boolean;
-  isCloudSelected: boolean;
-  routingModeSaving: boolean;
-  onSelectCloud: () => void;
-  /** Opens the interactive Cloud login when the account is unsigned-in. */
-  onSignIn: () => void;
-  elizaCloudConnected: boolean;
-  largeModelOptions: ModelOption[];
-  cloudModelSchema: CloudModelSchema | null;
-  modelValues: {
-    values: Record<string, unknown>;
-    setKeys: Set<string>;
-  };
-  currentLargeModel: string;
-  modelSaving: boolean;
-  modelSaveSuccess: boolean;
-  onModelFieldChange: (key: string, value: unknown) => void;
-  servingAxes: ServingAxes;
-}
-export function CloudPanel({
-  cloudCallsDisabled,
-  isCloudSelected,
-  routingModeSaving,
-  onSelectCloud,
-  onSignIn,
-  elizaCloudConnected,
-  largeModelOptions,
-  cloudModelSchema,
-  modelValues,
-  currentLargeModel,
-  modelSaving,
-  modelSaveSuccess,
-  onModelFieldChange,
-  servingAxes,
-}: CloudPanelProps) {
-  const t = useAppSelector((s) => s.t);
-  const loginBusy = useAppSelector((s) => s.elizaCloudLoginBusy);
-  const loginError = useAppSelector((s) => s.elizaCloudLoginError);
-  const loginUrl = useAppSelector((s) => s.elizaCloudLoginFallbackUrl);
-  const setActionNotice = useAppSelector((s) => s.setActionNotice);
-  const [reopening, setReopening] = useState(false);
-  const reopenSignIn = async () => {
-    if (!loginUrl || reopening) return;
-    setReopening(true);
-    const reportFailure = () =>
-      setActionNotice(
-        t("providerpanels.browserReopenFailed", {
-          defaultValue: "Couldn't open the sign-in browser. Try again.",
-        }),
-        "error",
-      );
-    try {
-      if (!(await openExternalUrl(loginUrl))) reportFailure();
-    } catch {
-      // error-policy:J4 Browser handoff failure remains a visible, retryable notice.
-      reportFailure();
-    } finally {
-      setReopening(false);
-    }
-  };
-  const cloudActive =
-    !cloudCallsDisabled && isCloudSelected && elizaCloudConnected;
-  const needsSignIn = !elizaCloudConnected;
-  return (
-    <div className="min-w-0">
-      <ProviderPanelHeader icon={Cloud} title="Eliza Cloud">
-        <SettingsActionButton
-          agentId={needsSignIn ? "cloud-sign-in" : "cloud-use-cloud"}
-          agentStatus={cloudActive ? "active" : undefined}
-          agentLabel={
-            needsSignIn
-              ? t("providerpanels.signInToCloud", {
-                  defaultValue: "Sign in to Eliza Cloud",
-                })
-              : cloudActive
-                ? t("providerpanels.cloudActive", {
-                    defaultValue: "Cloud active",
-                  })
-                : t("providerpanels.useCloud", {
-                    defaultValue: "Use Eliza Cloud",
-                  })
-          }
-          type="button"
-          variant={cloudActive || needsSignIn ? "default" : "outline"}
-          className="h-9 rounded-md px-3 text-xs font-medium"
-          disabled={routingModeSaving || loginBusy}
-          aria-label={
-            needsSignIn
-              ? t("providerpanels.signInToCloud", {
-                  defaultValue: "Sign in to Eliza Cloud",
-                })
-              : cloudActive
-                ? t("providerpanels.cloudActive", {
-                    defaultValue: "Cloud active",
-                  })
-                : t("providerpanels.useCloud", {
-                    defaultValue: "Use Eliza Cloud",
-                  })
-          }
-          onClick={needsSignIn ? onSignIn : onSelectCloud}
-        >
-          {needsSignIn ? (
-            <LogIn className="size-4" aria-hidden />
-          ) : (
-            <Cloud className="size-4" aria-hidden />
-          )}
-          {needsSignIn
-            ? t("providerpanels.signIn", { defaultValue: "Sign in" })
-            : t("providerpanels.cloud", { defaultValue: "Cloud" })}
-        </SettingsActionButton>
-      </ProviderPanelHeader>
-      {loginError ? (
-        <Alert variant="destructive">
-          <AlertDescription>{loginError}</AlertDescription>
-        </Alert>
-      ) : loginBusy ? (
-        <Alert role="status" aria-busy="true">
-          <AlertDescription>
-            {loginUrl
-              ? t("providerpanels.waitingForBrowserSignIn", {
-                  defaultValue: "Complete sign-in in your browser.",
-                })
-              : t("providerpanels.openingCloudSignIn", {
-                  defaultValue: "Opening Cloud sign-in…",
-                })}
-            {loginUrl ? (
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-2"
-                disabled={reopening}
-                onClick={() => void reopenSignIn()}
-              >
-                {t("providerpanels.reopenSignIn", {
-                  defaultValue: "Reopen sign-in",
-                })}
-              </Button>
-            ) : null}
-          </AlertDescription>
-        </Alert>
-      ) : null}
-      {needsSignIn ? (
-        <div className="p-3 sm:px-4">
-          <div className="rounded-sm border border-warn/30 bg-warn/5 px-3 py-2 text-warn text-xs">
-            {describeUnsignedCloudChat(servingAxes, t, "panel")}
-          </div>
-        </div>
-      ) : (
-        <ProviderRoutingPanel
-          largeModelOptions={largeModelOptions}
-          cloudModelSchema={cloudModelSchema}
-          modelValues={modelValues}
-          currentLargeModel={currentLargeModel}
-          modelSaving={modelSaving}
-          modelSaveSuccess={modelSaveSuccess}
-          onModelFieldChange={onModelFieldChange}
-          showCloudControls={cloudActive}
-          elizaCloudConnected={elizaCloudConnected}
-        />
-      )}
     </div>
   );
 }

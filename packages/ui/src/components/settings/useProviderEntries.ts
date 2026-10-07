@@ -17,7 +17,7 @@ import {
   isSubscriptionProviderSelectionId,
   SUBSCRIPTION_PROVIDER_SELECTIONS,
 } from "@elizaos/host/protocol";
-import { Cloud, Cpu, KeyRound } from "lucide-react";
+import { Cpu, KeyRound } from "lucide-react";
 import { type ComponentType, useCallback, useMemo } from "react";
 import { getFrontendPlatform } from "../../platform/platform-guards";
 import type { ProviderCategory, ProviderStatus } from "./ProviderCard";
@@ -112,7 +112,7 @@ export function useProviderEntries({
   allAiProviders,
   elizaCloudConnected,
   cloudCallsDisabled,
-  isCloudSelected,
+  isCloudSelected: _isCloudSelected,
   isCloudConfigured,
   resolvedSelectedId,
   subscriptionStatus,
@@ -168,22 +168,7 @@ export function useProviderEntries({
     isCloudConfigured && !elizaCloudConnected && !cloudCallsDisabled;
   const getProviderStatus = useCallback(
     (entryId: ProviderPanelId): ProviderStatus => {
-      if (entryId === "__cloud__") {
-        if (elizaCloudConnected) {
-          return { tone: "ok", label: "Connected" };
-        }
-        // Configured (cloud-proxy) but not signed in — surface a clear
-        // warning instead of the ambiguous "Available" so the user can see
-        // why Cloud is not actually serving requests (#20045).
-        if (isCloudConfigured) {
-          return { tone: "warn", label: "Not signed in" };
-        }
-        return { tone: "muted", label: "Available" };
-      }
       if (entryId === "__local__") {
-        // Cloud-proxy without a signed-in account falls through to local
-        // inference. Mark Local Active in that state, not just when the
-        // user has explicitly chosen local-only (#20045).
         return cloudCallsDisabled || servingLocalFallback
           ? { tone: "ok", label: "Active" }
           : { tone: "muted", label: "Available" };
@@ -237,8 +222,6 @@ export function useProviderEntries({
       anthropicCliDetected,
       apiProviderChoices,
       cloudCallsDisabled,
-      elizaCloudConnected,
-      isCloudConfigured,
       servingLocalFallback,
       subscriptionStatus,
     ],
@@ -253,23 +236,9 @@ export function useProviderEntries({
       status: getProviderStatus("__local__"),
       current: cloudCallsDisabled || servingLocalFallback,
     };
-    // On phones the headline choice is Cloud vs on-device, so surface the local
-    // provider right after Cloud. On desktop/web the subscription + API-key
-    // providers come first and local sits after them (its long-standing spot).
+    // On mobile local sits first; on desktop it follows subscription providers.
     const platform = getFrontendPlatform();
     const localProviderFirst = platform === "ios" || platform === "android";
-    entries.push({
-      id: "__cloud__",
-      icon: Cloud,
-      label: "Eliza Cloud",
-      category: "cloud",
-      status: getProviderStatus("__cloud__"),
-      // Only mark Cloud as current when it is actually connected. When
-      // cloud-proxy is configured but the user is not signed in, the runtime
-      // silently falls back to local inference; marking Cloud "current" in
-      // that state is dishonest (#20045).
-      current: !cloudCallsDisabled && isCloudSelected,
-    });
     if (localProviderFirst) {
       entries.push(localEntry);
     }
@@ -301,7 +270,6 @@ export function useProviderEntries({
     apiProviderChoices,
     cloudCallsDisabled,
     getProviderStatus,
-    isCloudSelected,
     resolvedSelectedId,
     servingLocalFallback,
     t,
